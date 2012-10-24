@@ -29,13 +29,14 @@ std::vector<int> markerIdVector;// vector that contains marker field marker ids
 //alvar::CaptureFactory *factory;
 IplImage *image;
 //IplImage *tempImg;
-//CvCapture* capture;
+// Comment this in a near future
+CvCapture* capture;
 
 extern "C"
 {
-	__declspec(dllexport) void alvar_init(char imageData[], int width, int height)
+	__declspec(dllexport) void alvar_init(/*char imageData[], int width, int height*/)
 	{
-		image->nSize = sizeof(IplImage);
+		/*image->nSize = sizeof(IplImage);
 		image->ID = 0;
 		image->nChannels = 3;
 		image->alphaChannel = 0;
@@ -58,20 +59,20 @@ extern "C"
 		image->imageSize = height * image->widthStep;
 
 		image->imageData = imageData;
-		image->imageDataOrigin = NULL;
+		image->imageDataOrigin = NULL;*/
 
-		//capture = cvCaptureFromCAM(CV_CAP_ANY);
+		capture = cvCaptureFromCAM(CV_CAP_ANY);
 
 		// Capture is central feature, so if we fail, we get out of here.
-		//if (capture) {
-		if (image) {
+		if (capture) {
+		//if (image) {
 			// Let's capture one frame to get video resolution
-			//tempImg = cvQueryFrame(capture);
+			image = cvQueryFrame(capture);
 
-			/*videoXRes = tempImg->width;
-			videoYRes = tempImg->height;*/
-			videoXRes = width;
-			videoYRes = height;
+			videoXRes = image->width;
+			videoYRes = image->height;
+			/*videoXRes = width;
+			videoYRes = height;*/
 
 			// Calibration. See manual and ALVAR internal samples how to calibrate your camera
 			// Calibration will make the marker detecting and marker pose calculation more accurate.
@@ -117,12 +118,12 @@ extern "C"
 		}
 	}
 
-	__declspec(dllexport) void alvar_process(char imageData[], double* transMatrix)
+	__declspec(dllexport) void alvar_process(/*char imageData[], */double* transMatrix)
 	{
 		alvar::Pose pose;
 		// Capture the image
-		//image = cvQueryFrame(capture);
-		image->imageData = imageData;
+		image = cvQueryFrame(capture);
+		//image->imageData = imageData;
 
 		// Check if we need to change image origin and is so, flip the image.
 		bool flip_image = (image->origin?true:false);
@@ -141,7 +142,6 @@ extern "C"
 			// Update the data
 			multiMarker->Update(markerDetector.markers, &camera, pose);
 
-			std::cout << "on est encore la" << std::endl;
 			// get the field's matrix
 			pose.GetMatrixGL(transMatrix);
 			trackerStat.Reset();
@@ -154,13 +154,49 @@ extern "C"
 		}
 	}
 
+	// This function returns the number of detected markers.
+	// It uses just OpenCV capture, but should be removed soon.
+	__declspec(dllexport) int alvar_number_of_detected_markers()
+	{
+		alvar::Pose pose;
+		// Capture the image
+		image = cvQueryFrame(capture);
+
+		// Check if we need to change image origin and is so, flip the image.
+		bool flip_image = (image->origin?true:false);
+		if (flip_image) {
+			cvFlip(image);
+			image->origin = !image->origin;
+		}
+
+		// Detect all the markers from the frame
+		markerDetector.Detect(image, &camera, false, false);
+		trackerStat.Track(image);
+
+		// Detect the markers
+		if (markerDetector.Detect(image, &camera, false, false)) {
+			// if ok, we have field in sight
+			// Update the data
+			multiMarker->Update(markerDetector.markers, &camera, pose);
+
+			trackerStat.Reset();
+		}
+	
+		// In case we flipped the image, it's time to flip it back 
+		if (flip_image) {
+			cvFlip(image);
+			image->origin = !image->origin;
+		}
+		return markerDetector.markers->size();
+	}
+
 	__declspec(dllexport) void alvar_close()
 	{
 		// Time to close the system
-		/*if(capture){
+		if(capture){
 			cvReleaseCapture(&capture);
 			delete capture;
-		}*/
-		delete image;
+		}
+		//delete image;
 	}
 }
