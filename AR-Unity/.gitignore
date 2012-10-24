@@ -163,6 +163,8 @@ pip-log.txt
 .DS_Store
 
 # Unity 3D
+Assets/Plugins/*.exp
+Assets/Plugins/*.lib
 Library/AssetImportState
 Library/AssetServerCacheV3
 Library/FailedAssetImports.txt
