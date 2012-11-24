@@ -5,7 +5,7 @@ public class Marker : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-        ALVARBridge.alvar_init();
+        //ALVARBridge.alvar_init();
 	}
 
     public static void TransformFromMatrix(Matrix4x4 matrix, Transform trans)
@@ -31,28 +31,28 @@ public class Marker : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
-        int nb = ALVARBridge.alvar_number_of_detected_markers();
-        if (nb > 0)
-        {
-            double[] transMat = new double[16];
-            ALVARBridge.alvar_process(transMat);
+        //int nb = ALVARBridge.alvar_number_of_detected_markers();
+        //if (nb > 0)
+        //{
+        //    double[] transMat = new double[16];
+        //    ALVARBridge.alvar_process(transMat);
             
-            Debug.Log(nb + " markers found with matrix={"
-                + transMat[0].ToString("F2") + " " + transMat[1].ToString("F2") + " " + transMat[2].ToString("F2") + " " + transMat[3].ToString("F2") + " "
-                + transMat[4].ToString("F2") + " " + transMat[5].ToString("F2") + " " + transMat[6].ToString("F2") + " " + transMat[7].ToString("F2") + " "
-                + transMat[8].ToString("F2") + " " + transMat[9].ToString("F2") + " " + transMat[10].ToString("F2") + " " + transMat[11].ToString("F2") + " "
-                + transMat[12].ToString("F2") + " " + transMat[13].ToString("F2") + " " + transMat[14].ToString("F2") + " " + transMat[15].ToString("F2") + "}");
+        //    Debug.Log(nb + " markers found with matrix={"
+        //        + transMat[0].ToString("F2") + " " + transMat[1].ToString("F2") + " " + transMat[2].ToString("F2") + " " + transMat[3].ToString("F2") + " "
+        //        + transMat[4].ToString("F2") + " " + transMat[5].ToString("F2") + " " + transMat[6].ToString("F2") + " " + transMat[7].ToString("F2") + " "
+        //        + transMat[8].ToString("F2") + " " + transMat[9].ToString("F2") + " " + transMat[10].ToString("F2") + " " + transMat[11].ToString("F2") + " "
+        //        + transMat[12].ToString("F2") + " " + transMat[13].ToString("F2") + " " + transMat[14].ToString("F2") + " " + transMat[15].ToString("F2") + "}");
 
-            Matrix4x4 mat = new Matrix4x4();
-            for (int i = 0; i < 16; ++i)
-            {
-                mat[i] = (float)transMat[i];
-            }
-            if (!mat.Equals(Matrix4x4.zero))
-            {
-                TransformFromMatrix(mat, this.transform);
-                Debug.Log(this.transform.position.x + " " + this.transform.position.y + " " + this.transform.position.z);
-            }
-        }
+        //    Matrix4x4 mat = new Matrix4x4();
+        //    for (int i = 0; i < 16; ++i)
+        //    {
+        //        mat[i] = (float)transMat[i];
+        //    }
+        //    if (!mat.Equals(Matrix4x4.zero))
+        //    {
+        //        TransformFromMatrix(mat, this.transform);
+        //        Debug.Log(this.transform.position.x + " " + this.transform.position.y + " " + this.transform.position.z);
+        //    }
+        //}
 	}
 }

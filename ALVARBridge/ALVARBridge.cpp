@@ -6,6 +6,10 @@
 #include "Marker.h"
 #include "highgui.h"
 
+
+#include <fstream>
+
+
 int videoXRes=0; // Video capture width (x)
 int videoYRes=0; // video capture height (y)
 //float video_X_FOV; // Video horizontal field of view
@@ -28,13 +32,14 @@ std::vector<int> markerIdVector;// vector that contains marker field marker ids
 // Global variable
 //alvar::CaptureFactory *factory;
 IplImage *image;
+char *tmp;
 //IplImage *tempImg;
 // Comment this in a near future
-CvCapture* capture;
+//CvCapture* capture;
 
 extern "C"
 {
-	__declspec(dllexport) void alvar_init(/*char imageData[], int width, int height*/)
+	__declspec(dllexport) void alvar_init(int width, int height/*char imageData[], int width, int height*/)
 	{
 		/*image->nSize = sizeof(IplImage);
 		image->ID = 0;
@@ -61,18 +66,18 @@ extern "C"
 		image->imageData = imageData;
 		image->imageDataOrigin = NULL;*/
 
-		capture = cvCaptureFromCAM(CV_CAP_ANY);
+		//capture = cvCaptureFromCAM(CV_CAP_ANY);
 
 		// Capture is central feature, so if we fail, we get out of here.
-		if (capture) {
+		//if (capture) {
 		//if (image) {
 			// Let's capture one frame to get video resolution
-			image = cvQueryFrame(capture);
+			/*image = cvQueryFrame(capture);
 
 			videoXRes = image->width;
-			videoYRes = image->height;
-			/*videoXRes = width;
-			videoYRes = height;*/
+			videoYRes = image->height;*/
+			videoXRes = width;
+			videoYRes = height;
 
 			// Calibration. See manual and ALVAR internal samples how to calibrate your camera
 			// Calibration will make the marker detecting and marker pose calculation more accurate.
@@ -115,15 +120,62 @@ extern "C"
 			multiMarker->PointCloudAdd(4, CORNER_MARKER_SIZE, pose);
 
 			trackerStat.Reset();
-		}
+		//}
 	}
 
-	__declspec(dllexport) void alvar_process(/*char imageData[], */double* transMatrix)
+	__declspec(dllexport) void alvar_process(int* imageData, double* transMatrix)
 	{
 		alvar::Pose pose;
 		// Capture the image
-		image = cvQueryFrame(capture);
-		//image->imageData = imageData;
+		//image = cvQueryFrame(capture);
+		image = new IplImage();
+		image->nSize = sizeof(IplImage);
+		image->ID = 0;
+		image->nChannels = 3;
+		image->alphaChannel = 0;
+		image->depth = IPL_DEPTH_8U;
+
+		memcpy(&image->colorModel, "RGB", sizeof(char) * 4);
+		memcpy(&image->channelSeq, "RGB", sizeof(char) * 4);
+		image->dataOrder = 0;
+
+		image->origin = 0;
+		image->align = 4;
+		image->width = videoXRes;
+		image->height = videoYRes;
+
+		image->roi = NULL;
+		image->maskROI = NULL;
+		image->imageId = NULL;
+		image->tileInfo = NULL;
+		image->widthStep = videoXRes * 3;
+		image->imageSize = videoYRes * image->widthStep;
+
+		// WARNING: CHANGE THIS VALUE
+		//char tmp[921600];
+		int n = videoXRes * videoYRes * 3;
+		tmp = new char[n];
+		for (int i = 0; i < n; ++i) {
+			tmp[i] = (char)imageData[i];
+		}
+
+		std::ofstream file("output.txt", std::ofstream::app);
+
+		//file << sizeof(*imageData) << " ";
+
+		/*for (int i = 0; i < 100; ++i)
+			file << imageData[i] << " ";*/
+
+		//for (int i = 0; i < n; ++i) {
+		//	file << imageData[i] << " ";
+		//	if (i % videoXRes == 0)
+		//		file << "\n";
+		//}
+
+		file.close();
+
+		image->imageData = tmp;
+		image->imageDataOrigin = NULL;
 
 		// Check if we need to change image origin and is so, flip the image.
 		bool flip_image = (image->origin?true:false);
@@ -156,7 +208,7 @@ extern "C"
 
 	// This function returns the number of detected markers.
 	// It uses just OpenCV capture, but should be removed soon.
-	__declspec(dllexport) int alvar_number_of_detected_markers()
+/*	__declspec(dllexport) int alvar_number_of_detected_markers()
 	{
 		alvar::Pose pose;
 		// Capture the image
@@ -188,15 +240,15 @@ extern "C"
 			image->origin = !image->origin;
 		}
 		return markerDetector.markers->size();
-	}
+	}*/
 
 	__declspec(dllexport) void alvar_close()
 	{
 		// Time to close the system
-		if(capture){
+		/*if(capture){
 			cvReleaseCapture(&capture);
 			delete capture;
-		}
-		//delete image;
+		}*/
+		delete image;
 	}
 }
