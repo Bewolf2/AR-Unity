@@ -6,15 +6,10 @@
 #include "Marker.h"
 #include "highgui.h"
 
-
-#include <fstream>
-
-
-int videoXRes=0; // Video capture width (x)
-int videoYRes=0; // video capture height (y)
+int w = 0; // Video capture width (x)
+int h = 0; // video capture height (y)
 //float video_X_FOV; // Video horizontal field of view
 //float video_Y_FOV; // Video vertical field of view
-//alvar::Capture*	capture = NULL; // ALVAR Capture
 
 alvar::Camera camera; // ALVAR camera (do not confuse to the OSG)
 alvar::MarkerDetector<alvar::MarkerData> markerDetector; // Marker detector
@@ -30,24 +25,22 @@ std::vector<int> markerIdVector;// vector that contains marker field marker ids
 #define MARKER_COUNT		5 // marker count in the field
 
 // Global variable
-//alvar::CaptureFactory *factory;
+// The image
 IplImage *image;
+// A temporary array
 char *tmp;
-//IplImage *tempImg;
-// Comment this in a near future
-//CvCapture* capture;
 
 extern "C"
 {
 	__declspec(dllexport) void alvar_init(int width, int height)
 	{
-		videoXRes = width;
-		videoYRes = height;
+		w = width;
+		h = height;
 
 		// Calibration. See manual and ALVAR internal samples how to calibrate your camera
 		// Calibration will make the marker detecting and marker pose calculation more accurate.
-		if (! camera.SetCalib("Calibrations/default_calib.xml", videoXRes, videoYRes)) {
-			camera.SetRes(videoXRes, videoYRes);
+		if (! camera.SetCalib("Calibrations/default_calib.xml", w, h)) {
+			camera.SetRes(w, h);
 		}
 
 		// Get the video fov for the tracking system
@@ -56,7 +49,7 @@ extern "C"
 		
 		// Set projection matrix as ALVAR recommends (based on the camera calibration)
 		double p[16];
-		camera.GetOpenglProjectionMatrix(p,videoXRes,videoYRes);
+		camera.GetOpenglProjectionMatrix(p, w, h);
 
 		//Initialize the multimarker system
 		for(int i = 0; i < MARKER_COUNT; ++i)
@@ -70,6 +63,8 @@ extern "C"
 		
 		alvar::Pose pose;
 		pose.Reset();
+
+		// Add the 5 markers
 		multiMarker->PointCloudAdd(0, CENTRE_MARKER_SIZE, pose);
 		
 		pose.SetTranslation(-10, 6, 0);
@@ -91,6 +86,7 @@ extern "C"
 	{
 		alvar::Pose pose;
 
+		// Initialisation of the image
 		image = new IplImage();
 		image->nSize = sizeof(IplImage);
 		image->ID = 0;
@@ -104,24 +100,24 @@ extern "C"
 
 		image->origin = 0;
 		image->align = 4;
-		image->width = videoXRes;
-		image->height = videoYRes;
+		image->width = w;
+		image->height = h;
 
 		image->roi = NULL;
 		image->maskROI = NULL;
 		image->imageId = NULL;
 		image->tileInfo = NULL;
-		image->widthStep = videoXRes * 3;
-		image->imageSize = videoYRes * image->widthStep;
+		image->widthStep = w * 3;
+		image->imageSize = h * image->widthStep;
 
-		int n = videoXRes * videoYRes * 3;
+		int n = w * h * 3;
 		tmp = new char[n];
 
-		int w = videoXRes*3;
-		int h = videoYRes;
-		for (int i = 0; i < w; ++i) {
+		// We put the image from Unity in an IplImage
+		// Unity begins in the corner lower-left
+		for (int i = 0; i < (w*3); ++i) {
 			for (int j = 0; j < h; ++j) {
-				tmp[i + j * w] = (char)imageData[i + (h - j - 1) * w];
+				tmp[i + j * (w*3)] = (char)imageData[i + (h - j - 1) * (w*3)];
 			}
 		}
 
@@ -143,6 +139,7 @@ extern "C"
 			trackerStat.Reset();
 		}
 	
+		// Clean
 		delete tmp;
 		delete image;
 	}
@@ -185,11 +182,6 @@ extern "C"
 
 	__declspec(dllexport) void alvar_close()
 	{
-		// Time to close the system
-		/*if(capture){
-			cvReleaseCapture(&capture);
-			delete capture;
-		}*/
 		delete image;
 	}
 }
