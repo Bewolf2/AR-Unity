@@ -3,6 +3,8 @@ using System.Collections;
 
 public class Marker : MonoBehaviour {
 
+    private Matrix4x4 mat = new Matrix4x4();
+
 	// Use this for initialization
 	void Start () {
         //ALVARBridge.alvar_init();
@@ -11,7 +13,10 @@ public class Marker : MonoBehaviour {
     public static void TransformFromMatrix(Matrix4x4 matrix, Transform trans)
     {
         trans.rotation = QuaternionFromMatrix(matrix);
-        trans.position = matrix.GetColumn(3); // uses implicit conversion from Vector4 to Vector3
+        //trans.position = matrix.GetColumn(3); // uses implicit conversion from Vector4 to Vector3
+        Vector3 tmp = matrix.GetColumn(3);
+        tmp.x = -tmp.x;
+        trans.position = tmp;
     }
 
     public static Quaternion QuaternionFromMatrix(Matrix4x4 m)
@@ -25,11 +30,28 @@ public class Marker : MonoBehaviour {
         q.x *= Mathf.Sign(q.x * (m[2, 1] - m[1, 2]));
         q.y *= Mathf.Sign(q.y * (m[0, 2] - m[2, 0]));
         q.z *= Mathf.Sign(q.z * (m[1, 0] - m[0, 1]));
+
+        q.y = -q.y;
+        q.z = -q.z;
+
         return q;
     }
 
 
 	// Update is called once per frame
+    void Update()
+    {
+        for (int i = 0; i < 16; ++i)
+        {
+            mat[i] = (float)background.transMat[i];
+        }
+        if (!mat.Equals(Matrix4x4.zero))
+        {
+            TransformFromMatrix(mat, this.transform);
+            //Debug.Log(this.transform.position.x + " " + this.transform.position.y + " " + this.transform.position.z);
+        }
+    }
+    /*
 	void Update () {
         //int nb = ALVARBridge.alvar_number_of_detected_markers();
         //if (nb > 0)
@@ -54,5 +76,5 @@ public class Marker : MonoBehaviour {
         //        Debug.Log(this.transform.position.x + " " + this.transform.position.y + " " + this.transform.position.z);
         //    }
         //}
-	}
+	}*/
 }

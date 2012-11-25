@@ -39,95 +39,58 @@ char *tmp;
 
 extern "C"
 {
-	__declspec(dllexport) void alvar_init(int width, int height/*char imageData[], int width, int height*/)
+	__declspec(dllexport) void alvar_init(int width, int height)
 	{
-		/*image->nSize = sizeof(IplImage);
-		image->ID = 0;
-		image->nChannels = 3;
-		image->alphaChannel = 0;
-		image->depth = IPL_DEPTH_8U;
+		videoXRes = width;
+		videoYRes = height;
 
-		memcpy(&image->colorModel, "RGB", sizeof(char) * 4);
-		memcpy(&image->channelSeq, "RGB", sizeof(char) * 4);
-		image->dataOrder = 0;
+		// Calibration. See manual and ALVAR internal samples how to calibrate your camera
+		// Calibration will make the marker detecting and marker pose calculation more accurate.
+		if (! camera.SetCalib("Calibrations/default_calib.xml", videoXRes, videoYRes)) {
+			camera.SetRes(videoXRes, videoYRes);
+		}
 
-		image->origin = 0;
-		image->align = 4;
-		image->width = width;
-		image->height = height;
-
-		image->roi = NULL;
-		image->maskROI = NULL;
-		image->imageId = NULL;
-		image->tileInfo = NULL;
-		image->widthStep = width * 3;
-		image->imageSize = height * image->widthStep;
-
-		image->imageData = imageData;
-		image->imageDataOrigin = NULL;*/
-
-		//capture = cvCaptureFromCAM(CV_CAP_ANY);
-
-		// Capture is central feature, so if we fail, we get out of here.
-		//if (capture) {
-		//if (image) {
-			// Let's capture one frame to get video resolution
-			/*image = cvQueryFrame(capture);
-
-			videoXRes = image->width;
-			videoYRes = image->height;*/
-			videoXRes = width;
-			videoYRes = height;
-
-			// Calibration. See manual and ALVAR internal samples how to calibrate your camera
-			// Calibration will make the marker detecting and marker pose calculation more accurate.
-			if (! camera.SetCalib("Calibrations/default_calib.xml", videoXRes, videoYRes)) {
-				camera.SetRes(videoXRes, videoYRes);
-			}
-
-			// Get the video fov for the tracking system
-			/*video_X_FOV = camera.GetFovX();
-			video_Y_FOV = camera.GetFovY();*/
+		// Get the video fov for the tracking system
+		/*video_X_FOV = camera.GetFovX();
+		video_Y_FOV = camera.GetFovY();*/
 		
-			// Set projection matrix as ALVAR recommends (based on the camera calibration)
-			double p[16];
-			camera.GetOpenglProjectionMatrix(p,videoXRes,videoYRes);
+		// Set projection matrix as ALVAR recommends (based on the camera calibration)
+		double p[16];
+		camera.GetOpenglProjectionMatrix(p,videoXRes,videoYRes);
 
-			//Initialize the multimarker system
-			for(int i = 0; i < MARKER_COUNT; ++i)
-				markerIdVector.push_back(i);
+		//Initialize the multimarker system
+		for(int i = 0; i < MARKER_COUNT; ++i)
+			markerIdVector.push_back(i);
 
-			// We make the initialization for MultiMarkerBundle using a fixed marker field (can be printed from MultiMarker.ppt)
-			markerDetector.SetMarkerSize(CORNER_MARKER_SIZE);
-			markerDetector.SetMarkerSizeForId(0, CENTRE_MARKER_SIZE);
+		// We make the initialization for MultiMarkerBundle using a fixed marker field (can be printed from MultiMarker.ppt)
+		markerDetector.SetMarkerSize(CORNER_MARKER_SIZE);
+		markerDetector.SetMarkerSizeForId(0, CENTRE_MARKER_SIZE);
 		
-			multiMarker = new alvar::MultiMarker(markerIdVector);
+		multiMarker = new alvar::MultiMarker(markerIdVector);
 		
-			alvar::Pose pose;
-			pose.Reset();
-			multiMarker->PointCloudAdd(0, CENTRE_MARKER_SIZE, pose);
+		alvar::Pose pose;
+		pose.Reset();
+		multiMarker->PointCloudAdd(0, CENTRE_MARKER_SIZE, pose);
 		
-			pose.SetTranslation(-10, 6, 0);
-			multiMarker->PointCloudAdd(1, CORNER_MARKER_SIZE, pose);
+		pose.SetTranslation(-10, 6, 0);
+		multiMarker->PointCloudAdd(1, CORNER_MARKER_SIZE, pose);
 		
-			pose.SetTranslation(10, 6, 0);
-			multiMarker->PointCloudAdd(2, CORNER_MARKER_SIZE, pose);
+		pose.SetTranslation(10, 6, 0);
+		multiMarker->PointCloudAdd(2, CORNER_MARKER_SIZE, pose);
 		
-			pose.SetTranslation(-10, -6, 0);
-			multiMarker->PointCloudAdd(3, CORNER_MARKER_SIZE, pose);
+		pose.SetTranslation(-10, -6, 0);
+		multiMarker->PointCloudAdd(3, CORNER_MARKER_SIZE, pose);
 		
-			pose.SetTranslation(+10, -6, 0);
-			multiMarker->PointCloudAdd(4, CORNER_MARKER_SIZE, pose);
+		pose.SetTranslation(+10, -6, 0);
+		multiMarker->PointCloudAdd(4, CORNER_MARKER_SIZE, pose);
 
-			trackerStat.Reset();
-		//}
+		trackerStat.Reset();
 	}
 
 	__declspec(dllexport) void alvar_process(int* imageData, double* transMatrix)
 	{
 		alvar::Pose pose;
-		// Capture the image
-		//image = cvQueryFrame(capture);
+
 		image = new IplImage();
 		image->nSize = sizeof(IplImage);
 		image->ID = 0;
@@ -151,38 +114,19 @@ extern "C"
 		image->widthStep = videoXRes * 3;
 		image->imageSize = videoYRes * image->widthStep;
 
-		// WARNING: CHANGE THIS VALUE
-		//char tmp[921600];
 		int n = videoXRes * videoYRes * 3;
 		tmp = new char[n];
-		for (int i = 0; i < n; ++i) {
-			tmp[i] = (char)imageData[i];
+
+		int w = videoXRes*3;
+		int h = videoYRes;
+		for (int i = 0; i < w; ++i) {
+			for (int j = 0; j < h; ++j) {
+				tmp[i + j * w] = (char)imageData[i + (h - j - 1) * w];
+			}
 		}
-
-		std::ofstream file("output.txt", std::ofstream::app);
-
-		//file << sizeof(*imageData) << " ";
-
-		/*for (int i = 0; i < 100; ++i)
-			file << imageData[i] << " ";*/
-
-		//for (int i = 0; i < n; ++i) {
-		//	file << imageData[i] << " ";
-		//	if (i % videoXRes == 0)
-		//		file << "\n";
-		//}
-
-		file.close();
 
 		image->imageData = tmp;
 		image->imageDataOrigin = NULL;
-
-		// Check if we need to change image origin and is so, flip the image.
-		bool flip_image = (image->origin?true:false);
-		if (flip_image) {
-			cvFlip(image);
-			image->origin = !image->origin;
-		}
 
 		// Detect all the markers from the frame
 		markerDetector.Detect(image, &camera, false, false);
@@ -199,11 +143,8 @@ extern "C"
 			trackerStat.Reset();
 		}
 	
-		// In case we flipped the image, it's time to flip it back 
-		if (flip_image) {
-			cvFlip(image);
-			image->origin = !image->origin;
-		}
+		delete tmp;
+		delete image;
 	}
 
 	// This function returns the number of detected markers.
