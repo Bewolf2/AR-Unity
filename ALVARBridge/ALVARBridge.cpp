@@ -110,19 +110,19 @@ extern "C"
 		image->widthStep = w * 3;
 		image->imageSize = h * image->widthStep;
 
+		image->imageDataOrigin = NULL;
+
 		int n = w * h * 3;
 		tmp = new char[n];
 
 		// We put the image from Unity in an IplImage
 		// Unity begins in the corner lower-left
-		for (int i = 0; i < (w*3); ++i) {
-			for (int j = 0; j < h; ++j) {
+		for (int i = 0; i < (w*3); ++i)
+			for (int j = 0; j < h; ++j)
 				tmp[i + j * (w*3)] = (char)imageData[i + (h - j - 1) * (w*3)];
-			}
-		}
 
+		// We put the data in the image
 		image->imageData = tmp;
-		image->imageDataOrigin = NULL;
 
 		// Detect all the markers from the frame
 		markerDetector.Detect(image, &camera, false, false);
@@ -146,18 +146,11 @@ extern "C"
 
 	// This function returns the number of detected markers.
 	// It uses just OpenCV capture, but should be removed soon.
-/*	__declspec(dllexport) int alvar_number_of_detected_markers()
+	__declspec(dllexport) int alvar_number_of_detected_markers(int* imageData)
 	{
 		alvar::Pose pose;
-		// Capture the image
-		image = cvQueryFrame(capture);
 
-		// Check if we need to change image origin and is so, flip the image.
-		bool flip_image = (image->origin?true:false);
-		if (flip_image) {
-			cvFlip(image);
-			image->origin = !image->origin;
-		}
+		image->imageData = tmp;
 
 		// Detect all the markers from the frame
 		markerDetector.Detect(image, &camera, false, false);
@@ -172,13 +165,12 @@ extern "C"
 			trackerStat.Reset();
 		}
 	
-		// In case we flipped the image, it's time to flip it back 
-		if (flip_image) {
-			cvFlip(image);
-			image->origin = !image->origin;
-		}
+		// Clean
+		delete tmp;
+		delete image;
+
 		return markerDetector.markers->size();
-	}*/
+	}
 
 	__declspec(dllexport) void alvar_close()
 	{

@@ -50,7 +50,6 @@ public class background : MonoBehaviour {
         }
 
         ALVARBridge.alvar_process(imageData, transMat);
-
         Debug.Log("matrix={"
             + transMat[0].ToString("F2") + " " + transMat[1].ToString("F2") + " " + transMat[2].ToString("F2") + " " + transMat[3].ToString("F2") + " "
             + transMat[4].ToString("F2") + " " + transMat[5].ToString("F2") + " " + transMat[6].ToString("F2") + " " + transMat[7].ToString("F2") + " "
