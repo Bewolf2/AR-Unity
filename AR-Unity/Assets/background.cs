@@ -44,6 +44,7 @@ public class background : MonoBehaviour {
         webCamTexture.GetPixels32 (data);
         int[] imageData = new int[data.Length * 3];
 
+        // Convert the char* in int*
         for (int i = 0; i < data.Length; ++i) {
             imageData[i*3] = (int)data[i].r;
             imageData[i*3+1] = (int)data[i].g;
@@ -51,6 +52,8 @@ public class background : MonoBehaviour {
         }
 
         ALVARBridge.alvar_process(imageData, transMat);
+
+        // DEBUG
         Debug.Log("matrix={"
             + transMat[0].ToString("F2") + " " + transMat[1].ToString("F2") + " " + transMat[2].ToString("F2") + " " + transMat[3].ToString("F2") + " "
             + transMat[4].ToString("F2") + " " + transMat[5].ToString("F2") + " " + transMat[6].ToString("F2") + " " + transMat[7].ToString("F2") + " "

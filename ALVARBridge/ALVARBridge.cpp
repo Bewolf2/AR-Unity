@@ -22,7 +22,7 @@ std::vector<int> markerIdVector;// vector that contains marker field marker ids
 #define CENTRE_MARKER_SIZE  8 // as in centimeters
 #define MARKER_COUNT		5 // marker count in the field
 
-// Global variable
+// Global variables
 // The image
 IplImage *image;
 // A temporary array
@@ -110,7 +110,9 @@ extern "C"
 		tmp = new char[n];
 
 		// We put the image from Unity in an IplImage
-		// Unity begins in the corner lower-left
+		// The Unity image is in RGB, and the OpenCV is BGR.
+		// Moreover, the Unity one begins in the corner lower-left
+		// while the OpenCV one begins in the upper-left corner.
 		for (int i = 0; i < (w*3); ++i)
 			for (int j = 0; j < h; ++j)
 				tmp[i + j * (w*3)] = (char)imageData[i + (h - j - 1) * (w*3)];

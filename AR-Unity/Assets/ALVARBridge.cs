@@ -15,6 +15,7 @@ public class ALVARBridge {
         int[] imageData,
         double[] transMatrix);
 
+    // This function seems buggy.
     [DllImport("ALVARBridge.dll")]
     public extern static int alvar_number_of_detected_markers(int[] imageData);
 
