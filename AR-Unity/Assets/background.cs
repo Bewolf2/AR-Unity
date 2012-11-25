@@ -21,6 +21,7 @@ public class background : MonoBehaviour {
 
 	void Start()
 	{
+        // Debug print
 		print (selectedCam);
 		print (WebCamTexture.devices[selectedCam].name);
 

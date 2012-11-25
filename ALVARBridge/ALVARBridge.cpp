@@ -8,8 +8,6 @@
 
 int w = 0; // Video capture width (x)
 int h = 0; // video capture height (y)
-//float video_X_FOV; // Video horizontal field of view
-//float video_Y_FOV; // Video vertical field of view
 
 alvar::Camera camera; // ALVAR camera (do not confuse to the OSG)
 alvar::MarkerDetector<alvar::MarkerData> markerDetector; // Marker detector
@@ -42,10 +40,6 @@ extern "C"
 		if (! camera.SetCalib("Calibrations/default_calib.xml", w, h)) {
 			camera.SetRes(w, h);
 		}
-
-		// Get the video fov for the tracking system
-		/*video_X_FOV = camera.GetFovX();
-		video_Y_FOV = camera.GetFovY();*/
 		
 		// Set projection matrix as ALVAR recommends (based on the camera calibration)
 		double p[16];
