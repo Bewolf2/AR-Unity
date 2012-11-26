@@ -1,0 +1,5 @@
+We need to properly position the object on the markers.
+
+- Optimisation:
+	Try to pass a char* from Unity to C++, instead of the actual int*.
+	This means we need to move the flip operation of the image in Unity.
