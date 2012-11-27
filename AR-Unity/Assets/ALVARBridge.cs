@@ -3,6 +3,8 @@ using System;
 using System.Collections;
 using System.Runtime.InteropServices;
 
+// This is the bridge of the ALVAR library in Unity.
+// It imports the functions of the DLL in this special class.
 public class ALVARBridge {
 
     [DllImport("ALVARBridge", EntryPoint = "alvar_init", CallingConvention = CallingConvention.Cdecl)]

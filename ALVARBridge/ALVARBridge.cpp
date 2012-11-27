@@ -1,4 +1,7 @@
-//ALVAR includes
+// This is the bridge of the ALVAR library, written in C++.
+// We need this DLL to use ALVAR functions in the Unity project, since Unity uses C# only.
+
+// ALVAR includes
 #include "CaptureFactory.h" // Video capturing
 #include "MarkerDetector.h" // Marker detector
 #include "MultiMarker.h"    // Multimarker system (marker field)
@@ -30,6 +33,7 @@ char *tmp;
 
 extern "C"
 {
+	// The initialisation function
 	__declspec(dllexport) void alvar_init(int width, int height)
 	{
 		w = width;
@@ -76,6 +80,7 @@ extern "C"
 		trackerStat.Reset();
 	}
 
+	// This function detects markers in the image passed from Unity
 	__declspec(dllexport) void alvar_process(int* imageData, double* transMatrix)
 	{
 		alvar::Pose pose;

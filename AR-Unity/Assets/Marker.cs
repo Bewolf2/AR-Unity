@@ -1,22 +1,11 @@
 using UnityEngine;
 using System.Collections;
 
+// This class moves an object associated with this script, according to the transformation
+// matrix get in the background class.
 public class Marker : MonoBehaviour {
 
-    private Matrix4x4 mat = new Matrix4x4();
-
-    public static void TransformFromMatrix(Matrix4x4 matrix, Transform trans)
-    {
-        //trans.localRotation = QuaternionFromMatrix(matrix);
-        trans.rotation = QuaternionFromMatrix(matrix);
-        Vector3 tmp = matrix.GetColumn(3); // uses implicit conversion from Vector4 to Vector3
-        // We need to invert the translation on the Y axis
-        tmp.y = -tmp.y;
-        //trans.localPosition = tmp;
-        //tmp.z = 250;
-        trans.position = tmp;
-    }
-
+    // Get a rotation Quaternion from a Matrix
     public static Quaternion QuaternionFromMatrix(Matrix4x4 m)
     {
         // Adapted from: http://www.euclideanspace.com/maths/geometry/rotations/conversions/matrixToQuaternion/index.htm
@@ -36,12 +25,29 @@ public class Marker : MonoBehaviour {
         return q;
     }
 
+    // Get a Transform ofject from a Matrix
+    public static void TransformFromMatrix(Matrix4x4 matrix, Transform trans)
+    {
+        //trans.localRotation = QuaternionFromMatrix(matrix);
+        trans.rotation = QuaternionFromMatrix(matrix);
+        Vector3 tmp = matrix.GetColumn(3); // uses implicit conversion from Vector4 to Vector3
+        // We need to invert the translation on the Y axis
+        tmp.y = -tmp.y;
+        //trans.localPosition = tmp;
+        //tmp.z = 250;
+        trans.position = tmp;
+    }
+
 	// Update is called once per frame
     void Update()
     {
+        // We use the transformation matrix of the background class
+        Matrix4x4 mat = new Matrix4x4();
         for (int i = 0; i < 16; ++i)
             mat[i] = (float)background.transMat[i];
 
+        // We move the object only if the transformation matrix is different
+        // from a matrix with all elements equal to zero .
         if (!mat.Equals(Matrix4x4.zero))
             TransformFromMatrix(mat, this.transform);
     }
