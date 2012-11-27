@@ -41,14 +41,14 @@ public class background : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        webCamTexture.GetPixels32 (data);
+        webCamTexture.GetPixels32(data);
         int[] imageData = new int[data.Length * 3];
 
-        // Convert the char* in int*
+        // Convert the Color32[] in int*
         for (int i = 0; i < data.Length; ++i) {
-            imageData[i*3] = (int)data[i].r;
-            imageData[i*3+1] = (int)data[i].g;
-            imageData[i*3+2] = (int)data[i].b;
+            imageData[i * 3] = (int)data[i].b;
+            imageData[i * 3 + 1] = (int)data[i].g;
+            imageData[i * 3 + 2] = (int)data[i].r;
         }
 
         ALVARBridge.alvar_process(imageData, transMat);

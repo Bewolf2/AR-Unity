@@ -131,7 +131,7 @@ extern "C"
 			multiMarker->Update(markerDetector.markers, &camera, pose);
 
 			// get the field's matrix
-			pose.GetMatrixGL(transMatrix);
+			pose.GetMatrixGL(transMatrix, false);
 			trackerStat.Reset();
 		}
 	

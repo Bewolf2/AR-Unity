@@ -7,10 +7,13 @@ public class Marker : MonoBehaviour {
 
     public static void TransformFromMatrix(Matrix4x4 matrix, Transform trans)
     {
+        //trans.localRotation = QuaternionFromMatrix(matrix);
         trans.rotation = QuaternionFromMatrix(matrix);
         Vector3 tmp = matrix.GetColumn(3); // uses implicit conversion from Vector4 to Vector3
-        // We need to invert the translation on the X axis
-        tmp.x = -tmp.x;
+        // We need to invert the translation on the Y axis
+        tmp.y = -tmp.y;
+        //trans.localPosition = tmp;
+        //tmp.z = 250;
         trans.position = tmp;
     }
 
@@ -26,8 +29,8 @@ public class Marker : MonoBehaviour {
         q.y *= Mathf.Sign(q.y * (m[0, 2] - m[2, 0]));
         q.z *= Mathf.Sign(q.z * (m[1, 0] - m[0, 1]));
 
-        // We need to invert rotations on Y and Z axis
-        q.y = -q.y;
+        // We need to invert rotations on X and Z axis
+        q.x = -q.x;
         q.z = -q.z;
 
         return q;

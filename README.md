@@ -1,7 +1,7 @@
 AR-Unity
 ========
 
-This is a Unity application, using the augmented reality library ALVAR.
+This is an application in the Unity game engine, using the augmented reality library ALVAR.
 
 It detects markers captured by the webcam, and applies an object on them.
 
