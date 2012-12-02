@@ -3,7 +3,7 @@ AR-Unity
 This is an augmented reality application in the Unity game engine.
 
 Requirements
-============
+------------
 * [Unity Pro 3.5.5](http://www.unity3d.com/) - the game engine. The Pro version is required, since
 it uses plugins.
 * [ALVAR 2.0.0 SDK](http://virtual.vtt.fi/virtual/proj2/multimedia/alvar/index.html) - the augmented
@@ -34,6 +34,17 @@ Since this is inspired by DemoMarkerField, a demo application provided with the 
 markers used are the same as this demo. You can found it in the ALVAR.pdf.
 <img src="https://raw.github.com/bara3r/AR-Unity/master/AR-Unity/Assets/Materials/markerfield.png"/>
 
+### Calibration
+You need to calibrate your webcam. See manual and ALVAR internal samples on how to calibrate your
+camera. The XML files for the calibration are in the Assets\Calibrations directory of the Unity
+application.
+
+The current calibration file used is specific to my webcam.
+
+Since our goal is to use the [Vuzix's Wrap 920AR]
+(http://www.vuzix.com/consumer/products_wrap920ar.html), some calibration files for these augmented
+reality eyewear are also present.
+
 AR-Unity
 --------
 This is the Unity project.
@@ -53,3 +64,7 @@ There are four GameObjects in the scene:
 * **ALVARBridge.cs**: this is the bridge in Unity.
 * **Background.cs**: this script uses ALVAR functions to detect markers in the webcam's stream.
 * **Marker.cs**: moves an object associated with this script, according to the markers.
+
+Info
+----
+This project is part of our final project at [EPITA](http://epita.fr/).
