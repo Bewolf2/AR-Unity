@@ -7,7 +7,7 @@ using System.IO;
 
 // This class applies the stream of a webcam on the object associated with this script.
 // It has a public transformation matrix, used by the Marker class.
-public class background : MonoBehaviour {
+public class Background : MonoBehaviour {
 	
 	// The selected webcam
 	public int selectedCam = 0;

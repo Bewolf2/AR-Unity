@@ -44,7 +44,7 @@ public class Marker : MonoBehaviour {
         // We use the transformation matrix of the background class
         Matrix4x4 mat = new Matrix4x4();
         for (int i = 0; i < 16; ++i)
-            mat[i] = (float)background.transMat[i];
+            mat[i] = (float)Background.transMat[i];
 
         // We move the object only if the transformation matrix is different
         // from a matrix with all elements equal to zero .
