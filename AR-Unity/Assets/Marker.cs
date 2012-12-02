@@ -41,7 +41,7 @@ public class Marker : MonoBehaviour {
 	// Update is called once per frame
     void Update()
     {
-        // We use the transformation matrix of the background class
+        // We use the transformation matrix of the Background class
         Matrix4x4 mat = new Matrix4x4();
         for (int i = 0; i < 16; ++i)
             mat[i] = (float)Background.transMat[i];

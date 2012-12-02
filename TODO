@@ -1,5 +1,8 @@
-We need to properly position the object on the markers.
+- We need to properly position the object on the markers.
 
 - Optimisation:
 	Try to pass a char* from Unity to C++, instead of the actual int*.
 	This means we need to move the flip operation of the image in Unity.
+
+- Avoid the multiple DLLs on the same directory as the exe. This means
+  we need to generate the DLL with good dependencies.
