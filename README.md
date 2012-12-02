@@ -11,39 +11,40 @@ reality software library.
 * [OpenCV 2.4.0](http://opencv.org/) - the third party library dependency of ALVAR.
 
 This project is in two parts:
-* **ALVARBridge** - this is the bridge between ALVAR's C++ functions and Unity C# scripts
-* **AR-Unity** - this is the Unity application using the augmented reality
+* **ALVARBridge** - this is the bridge between ALVAR's C++ functions and Unity C# scripts.
+* **AR-Unity** - this is the Unity application, using the augmented reality.
 
 ALVARBridge
 -----------
-This bridge creates an unmanaged DLL called ALVARBridge.dll. We need it, since ALVAR is in C++, and
-Unity doesn't support it, but supports C# scripts instead. This allows us to call C++ functions in
-C# scripts.
+This bridge creates an unmanaged DLL called *ALVARBridge.dll*. We need it, since ALVAR is in C++,
+and Unity doesn't support it, but supports C# scripts instead. This allows us to call C++ functions
+in C# scripts.
 
 ### The DLL
 The following functions are used to detect markers in the image:
 * `void alvar_init(int width, int height)` is used to initialize the detection of the markers.
 * `void alvar_process(int* imageData, double* transMatrix)` detect the markers, and modify the
-transformation matrix. This transformation matrix is then used in Unity to move the object on the
+transformation matrix. This transformation matrix is then used in Unity to move any object on the
 markers.
 
-The ALVARBridge.dll is directly exported in the Assets\Plugins directory of the Unity application.
+The *ALVARBridge.dll* is directly exported in the *Assets\Plugins* directory of the Unity application.
 
 ### Markers
-Since this is inspired by DemoMarkerField, a demo application provided with the ALVAR library, the
-markers used are the same as this demo. You can found it in the ALVAR.pdf.
+Since this is inspired by *DemoMarkerField*, a demo application provided with the ALVAR library, the
+markers used are the same as this demo. You can found it in the *ALVAR.pdf*.
 <img src="https://raw.github.com/bara3r/AR-Unity/master/AR-Unity/Assets/Materials/markerfield.png"/>
 
 ### Calibration
-You need to calibrate your webcam. See manual and ALVAR internal samples on how to calibrate your
-camera. The XML files for the calibration are in the Assets\Calibrations directory of the Unity
-application.
+You need to calibrate your webcam. See the manual and ALVAR internal samples on how to calibrate
+your camera. The XML files for the calibration are in the *Assets\Calibrations* directory of the
+Unity application.
 
 The current calibration file used is specific to my webcam.
 
 Since our goal is to use the [Vuzix's Wrap 920AR]
 (http://www.vuzix.com/consumer/products_wrap920ar.html), some calibration files for these augmented
-reality eyewear are also present.
+reality eyewear are also present. These Wrap920_*.xml files come from the [Goblin XNA]
+(https://goblinxna.codeplex.com/) framework.
 
 AR-Unity
 --------
@@ -51,17 +52,17 @@ This is the Unity project.
 
 The video stream of the webcam is projected on a plane, and an object ressembling
 a paper with markers is moving according to the detected markers. This object could be anything, as
-long as it is associated with the Marker.cs script.
+long as it is associated with the *Marker.cs* script.
 
 ### Scene
 There are four GameObjects in the scene:
 * **Cube**: the object placed on the markers and moving according to their position and orientation.
-* **Directional light**: used to light the plane.
+* **Directional light**: used to light up the plane.
 * **Main Camera**: the Unity camera, filming the Plane object.
 * **Plane**: the webcam's stream is projected on it.
 
 ### C# scripts
-* **ALVARBridge.cs**: this is the bridge in Unity.
+* **ALVARBridge.cs**: this is the bridge of the DLL in Unity.
 * **Background.cs**: this script uses ALVAR functions to detect markers in the webcam's stream.
 * **Marker.cs**: moves an object associated with this script, according to the markers.
 
